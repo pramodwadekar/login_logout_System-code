@@ -45,20 +45,23 @@ def LoginUser(request):
         password = request.POST['password'] 
         
         #Checking email id with database 
-        user = User.objects.get(Email = email) 
-        if user:
-            if user.Password == password:
-                request.session["Firstname"] = user.Firstname
-                request.session["Lastname"] = user.Lastname        
-                request.session["Email"] = user.Email   
-                request.session["Contact"] = user.Contact 
-                return render(request, "home.html")
+        try: 
+            user = User.objects.get(Email = email) 
+            if user:
+                if user.Password == password:
+                    request.session["Firstname"] = user.Firstname
+                    request.session["Lastname"] = user.Lastname        
+                    request.session["Email"] = user.Email   
+                    request.session["Contact"] = user.Contact 
+                    return render(request, "home.html")
             else:
                 message ="Password Does Not Match"
                 return render(request, "login.html",{"msg":message})
-        else:
-            message = "User Does Not Exist"
-            return render(request, "register.html",{"msg":message})
+        except User.DoesNotExist:
+            message = "User Does Not Exist please register"
+            return render(request, "login.html",{"msg":message})
+    else:
+        return render(request, "login.html") 
 
 
 
